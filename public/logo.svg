@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 60" fill="#ffffff">
+  <defs>
+    <style>
+      text { font-family: 'Futura', 'Century Gothic', 'Avant Garde', sans-serif; font-weight: 700; font-size: 52px; letter-spacing: 2px; }
+    </style>
+    <clipPath id="ocut">
+      <rect x="0" y="0" width="520" height="60"/>
+    </clipPath>
+  </defs>
+  <!-- AMIG -->
+  <text x="0" y="48" letter-spacing="3">A</text>
+  <text x="42" y="48" letter-spacing="3">M</text>
+  <text x="96" y="48" letter-spacing="3">I</text>
+  <text x="120" y="48" letter-spacing="3">G</text>
+  <!-- O with black quarter circle -->
+  <g transform="translate(168, 4)">
+    <circle cx="24" cy="24" r="24" fill="#ffffff"/>
+    <path d="M 24 0 A 24 24 0 0 1 48 24 L 24 24 Z" fill="#0d1220"/>
+  </g>
+  <!-- BLIND -->
+  <text x="220" y="48" letter-spacing="3">B</text>
+  <text x="252" y="48" letter-spacing="3">L</text>
+  <text x="280" y="48" letter-spacing="3">I</text>
+  <text x="302" y="48" letter-spacing="3">N</text>
+  <text x="342" y="48" letter-spacing="3">D</text>
+</svg>

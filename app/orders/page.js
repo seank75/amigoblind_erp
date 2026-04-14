@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useToast } from '@/components/Toast';
+import Loading from '@/components/Loading';
 
 function formatAmount(amount) {
   return new Intl.NumberFormat('ko-KR').format(amount || 0);
@@ -88,7 +89,9 @@ export default function OrdersPage() {
 
         <div className="card">
           <div className="data-table-wrapper">
-            {filtered.length > 0 ? (
+            {loading ? (
+              <Loading />
+            ) : filtered.length > 0 ? (
               <table className="data-table">
                 <thead>
                   <tr>
@@ -133,13 +136,9 @@ export default function OrdersPage() {
             ) : (
               <div className="empty-state">
                 <div className="empty-state-icon">📋</div>
-                <div className="empty-state-title">{loading ? '로딩 중...' : '주문이 없습니다'}</div>
-                {!loading && (
-                  <>
-                    <div className="empty-state-desc">새 주문을 등록해보세요</div>
-                    <Link href="/orders/new" className="btn btn-primary">➕ 주문 등록</Link>
-                  </>
-                )}
+                <div className="empty-state-title">주문이 없습니다</div>
+                <div className="empty-state-desc">새 주문을 등록해보세요</div>
+                <Link href="/orders/new" className="btn btn-primary">➕ 주문 등록</Link>
               </div>
             )}
           </div>

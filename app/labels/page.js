@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/components/Toast';
+import Loading from '@/components/Loading';
 
 function formatAmount(amount) {
   return new Intl.NumberFormat('ko-KR').format(amount || 0);
@@ -134,7 +135,9 @@ export default function LabelsPage() {
             </button>
           </div>
           <div className="data-table-wrapper">
-            {orders.length > 0 ? (
+            {loading ? (
+              <Loading />
+            ) : orders.length > 0 ? (
               <table className="data-table">
                 <thead>
                   <tr>
@@ -168,7 +171,7 @@ export default function LabelsPage() {
             ) : (
               <div className="empty-state">
                 <div className="empty-state-icon">🏷️</div>
-                <div className="empty-state-title">{loading ? '로딩 중...' : '진행중인 주문이 없습니다'}</div>
+                <div className="empty-state-title">진행중인 주문이 없습니다</div>
               </div>
             )}
           </div>

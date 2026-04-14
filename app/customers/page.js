@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useToast } from '@/components/Toast';
+import Loading from '@/components/Loading';
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState([]);
@@ -125,7 +126,9 @@ export default function CustomersPage() {
 
         <div className="card">
           <div className="data-table-wrapper">
-            {filtered.length > 0 ? (
+            {loading ? (
+              <Loading />
+            ) : filtered.length > 0 ? (
               <table className="data-table">
                 <thead>
                   <tr>
@@ -156,8 +159,8 @@ export default function CustomersPage() {
             ) : (
               <div className="empty-state">
                 <div className="empty-state-icon">🏢</div>
-                <div className="empty-state-title">{loading ? '로딩 중...' : '거래처가 없습니다'}</div>
-                {!loading && <div className="empty-state-desc">새 거래처를 등록해보세요</div>}
+                <div className="empty-state-title">거래처가 없습니다</div>
+                <div className="empty-state-desc">새 거래처를 등록해보세요</div>
               </div>
             )}
           </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useToast } from '@/components/Toast';
+import Loading from '@/components/Loading';
 
 export default function TaxInvoicePage() {
   const [orders, setOrders] = useState([]);
@@ -53,7 +54,9 @@ export default function TaxInvoicePage() {
             <h2>세금계산서 발행 대상 주문</h2>
           </div>
           <div className="data-table-wrapper">
-            {orders.length > 0 ? (
+            {loading ? (
+              <Loading />
+            ) : orders.length > 0 ? (
               <table className="data-table">
                 <thead>
                   <tr>
@@ -89,7 +92,7 @@ export default function TaxInvoicePage() {
             ) : (
               <div className="empty-state">
                 <div className="empty-state-icon">🧾</div>
-                <div className="empty-state-title">{loading ? '로딩 중...' : '발행 대상 주문이 없습니다'}</div>
+                <div className="empty-state-title">발행 대상 주문이 없습니다</div>
               </div>
             )}
           </div>

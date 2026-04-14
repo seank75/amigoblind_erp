@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useToast } from '@/components/Toast';
+import Loading from '@/components/Loading';
 
 const CATEGORIES = ['롤블라인드', '버티칼', '우드', '허니콤', '콤비', '베네시안', '기타'];
 
@@ -100,7 +101,9 @@ export default function ProductsPage() {
 
         <div className="card">
           <div className="data-table-wrapper">
-            {filtered.length > 0 ? (
+            {loading ? (
+              <Loading />
+            ) : filtered.length > 0 ? (
               <table className="data-table">
                 <thead>
                   <tr>
@@ -129,7 +132,7 @@ export default function ProductsPage() {
             ) : (
               <div className="empty-state">
                 <div className="empty-state-icon">🪟</div>
-                <div className="empty-state-title">{loading ? '로딩 중...' : '품목이 없습니다'}</div>
+                <div className="empty-state-title">품목이 없습니다</div>
               </div>
             )}
           </div>

@@ -65,15 +65,14 @@ export default function Sidebar() {
             alt="AMIGO BLIND"
             style={{
               height: 18,
-              filter: 'invert(1)',
               objectFit: 'contain',
             }}
           />
           <button className="mobile-close-btn" onClick={() => setIsOpen(false)}>✕</button>
         </div>
         <nav className="sidebar-nav">
-          {navItems.map((section) => (
-            <div key={section.section}>
+          {navItems.map((section, idx) => (
+            <div key={section.section} style={idx > 0 ? { borderTop: '1px solid #e5e7eb', paddingTop: '8px', marginTop: '8px' } : {}}>
               <div className="nav-section-title">{section.section}</div>
               {section.items.map((item) => {
                 const isActive =

@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useToast } from '@/components/Toast';
+import Loading from '@/components/Loading';
 
 function formatAmount(amount) {
   return new Intl.NumberFormat('ko-KR').format(amount || 0);
@@ -52,10 +53,7 @@ export default function OrderDetailPage({ params }) {
       <>
         <header className="main-header"><h1>주문 상세</h1></header>
         <div className="main-body">
-          <div className="empty-state">
-            <div className="empty-state-icon">⏳</div>
-            <div className="empty-state-title">로딩 중...</div>
-          </div>
+          <Loading />
         </div>
       </>
     );

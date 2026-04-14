@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useToast } from '@/components/Toast';
+import Loading from '@/components/Loading';
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState({});
@@ -38,10 +39,7 @@ export default function SettingsPage() {
       <>
         <header className="main-header"><h1>시스템 설정</h1></header>
         <div className="main-body">
-          <div className="empty-state">
-            <div className="empty-state-icon">⏳</div>
-            <div className="empty-state-title">로딩 중...</div>
-          </div>
+          <Loading />
         </div>
       </>
     );

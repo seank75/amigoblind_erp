@@ -463,6 +463,68 @@ html, body {
   gap: 16px;
 }
 
+/* 필수 항목 별표 */
+.form-required {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+/* 에러 상태 인풋 */
+.form-input-error {
+  border-color: #ef4444 !important;
+  background: #fff8f8;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+/* 인라인 에러 메시지 */
+.form-error-msg {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #dc2626;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  animation: fadeIn var(--transition-fast) ease-out;
+}
+
+/* 주소검색 행 레이아웃 */
+.address-search-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.address-search-row .form-input {
+  flex: 1;
+}
+
+/* 주소검색 버튼 */
+.btn-address-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 14px;
+  background: var(--accent-blue);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.btn-address-search:hover {
+  background: var(--accent-gold-dark);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transform: translateY(-1px);
+}
+
+
 /* ===== Status Badge ===== */
 .status-badge {
   display: inline-flex;

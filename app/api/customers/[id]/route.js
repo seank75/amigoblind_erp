@@ -1,4 +1,5 @@
-import { getCustomerById, updateCustomer } from '@/lib/db';
+import { getCustomerById, updateCustomer, createActivityLog } from '@/lib/db';
+import { getAuthUser } from '@/lib/auth';
 
 export async function GET(request, { params }) {
   try {
@@ -15,9 +16,11 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   try {
+    const user = await getAuthUser(request);
     const { id } = await params;
     const data = await request.json();
     await updateCustomer(id, data);
+    if (user) await createActivityLog({ user_id: user.id, user_name: user.name, action: 'customer_update', detail: `거래처 수정: ${data.company_name}` });
     return Response.json({ message: '거래처가 수정되었습니다.' });
   } catch (error) {
     if (error.message?.includes('UNIQUE') || error.message?.includes('unique') || error.message?.includes('duplicate')) {

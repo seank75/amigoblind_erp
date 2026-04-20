@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 const navItems = [
@@ -31,18 +31,30 @@ const navItems = [
     section: '설정',
     items: [
       { href: '/settings', icon: '⚙️', label: '시스템 설정' },
+      { href: '/settings/users', icon: '👥', label: '사용자 관리' },
+      { href: '/settings/backup', icon: '💾', label: '백업 / 복원' },
+      { href: '/activity-logs', icon: '📋', label: '활동 기록' },
     ],
   },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [me, setMe] = useState(null);
 
-  // Close sidebar on path change (mobile)
+  useEffect(() => { setIsOpen(false); }, [pathname]);
+
   useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
+    fetch('/api/auth/me').then((r) => r.json()).then((d) => setMe(d.user || null)).catch(() => {});
+  }, []);
+
+  async function handleLogout() {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/login');
+    router.refresh();
+  }
 
   return (
     <>
@@ -74,6 +86,22 @@ export default function Sidebar() {
           />
           <button className="mobile-close-btn" onClick={() => setIsOpen(false)}>✕</button>
         </div>
+        {me && (
+          <div style={{ padding: '12px 16px', borderBottom: '1px solid #e5e7eb', marginBottom: 4 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 4 }}>{me.name}</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span className={`status-badge ${me.role === 'admin' ? 'status-완료' : 'status-접수'}`} style={{ fontSize: 11 }}>
+                {me.role === 'admin' ? '관리자' : '일반'}
+              </span>
+              <button
+                onClick={handleLogout}
+                style={{ fontSize: 11, color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px' }}
+              >
+                로그아웃
+              </button>
+            </div>
+          </div>
+        )}
         <nav className="sidebar-nav">
           {navItems.map((section, idx) => (
             <div key={section.section} style={idx > 0 ? { borderTop: '1px solid #e5e7eb', paddingTop: '8px', marginTop: '8px' } : {}}>

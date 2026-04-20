@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/components/Toast';
 import Loading from '@/components/Loading';
+import PasswordConfirmModal from '@/components/PasswordConfirmModal';
 
 const CATEGORIES = ['롤블라인드', '버티칼', '우드', '허니콤', '콤비', '베네시안', '기타'];
 
@@ -12,6 +13,8 @@ export default function ProductsPage() {
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [pendingOpen, setPendingOpen] = useState(null);
   const addToast = useToast();
 
   const emptyForm = { name: '', category: '롤블라인드', unit_price: 0, description: '' };
@@ -28,17 +31,28 @@ export default function ProductsPage() {
   }
 
   function openNew() {
-    setForm(emptyForm);
-    setEditingProduct(null);
-    setShowModal(true);
+    setPendingOpen('new');
+    setShowPasswordModal(true);
   }
 
   function openEdit(product) {
-    setForm({
-      name: product.name, category: product.category,
-      unit_price: product.unit_price, description: product.description || '',
-    });
-    setEditingProduct(product);
+    setPendingOpen(product);
+    setShowPasswordModal(true);
+  }
+
+  function onPasswordSuccess() {
+    if (pendingOpen === 'new') {
+      setForm(emptyForm);
+      setEditingProduct(null);
+    } else {
+      const product = pendingOpen;
+      setForm({
+        name: product.name, category: product.category,
+        unit_price: product.unit_price, description: product.description || '',
+      });
+      setEditingProduct(product);
+    }
+    setPendingOpen(null);
     setShowModal(true);
   }
 
@@ -52,16 +66,21 @@ export default function ProductsPage() {
           method: 'PUT', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(form),
         });
-        addToast('품목이 수정되었습니다.');
       } else {
         await fetch('/api/products', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(form),
         });
-        addToast('품목이 등록되었습니다.');
       }
-      setShowModal(false);
       loadProducts();
+      addToast(editingProduct ? '품목이 수정되었습니다.' : '품목이 등록되었습니다.');
+      const done = confirm('저장되었습니다. 창을 닫으시겠습니까?');
+      if (done) {
+        setShowModal(false);
+      } else {
+        setForm(emptyForm);
+        setEditingProduct(null);
+      }
     } catch (err) { addToast(err.message, 'error'); }
   }
 
@@ -179,6 +198,13 @@ export default function ProductsPage() {
               </form>
             </div>
           </div>
+        )}
+
+        {showPasswordModal && (
+          <PasswordConfirmModal
+            onSuccess={onPasswordSuccess}
+            onClose={() => { setShowPasswordModal(false); setPendingOpen(null); }}
+          />
         )}
       </div>
     </>

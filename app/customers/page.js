@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/components/Toast';
 import Loading from '@/components/Loading';
+import PasswordConfirmModal from '@/components/PasswordConfirmModal';
 
 // 사업자번호 형식 검사 (000-00-00000)
 function validateBusinessNumber(value) {
@@ -60,6 +61,8 @@ export default function CustomersPage() {
   const [loading, setLoading] = useState(true);
   const [formErrors, setFormErrors] = useState({});
   const [kakaoLoaded, setKakaoLoaded] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [pendingOpen, setPendingOpen] = useState(null); // 'new' | customer object
   const addToast = useToast();
 
   const emptyForm = {
@@ -97,27 +100,38 @@ export default function CustomersPage() {
   }
 
   function openNew() {
-    setForm(emptyForm);
-    setFormErrors({});
-    setEditingCustomer(null);
-    setShowModal(true);
+    setPendingOpen('new');
+    setShowPasswordModal(true);
   }
 
   function openEdit(customer) {
-    setForm({
-      business_number: customer.business_number || '',
-      company_name: customer.company_name || '',
-      representative: customer.representative || '',
-      address: customer.address || '',
-      address_detail: customer.address_detail || '',
-      business_type: customer.business_type || '',
-      business_category: customer.business_category || '',
-      phone: customer.phone || '',
-      email: customer.email || '',
-      memo: customer.memo || '',
-    });
-    setFormErrors({});
-    setEditingCustomer(customer);
+    setPendingOpen(customer);
+    setShowPasswordModal(true);
+  }
+
+  function onPasswordSuccess() {
+    if (pendingOpen === 'new') {
+      setForm(emptyForm);
+      setFormErrors({});
+      setEditingCustomer(null);
+    } else {
+      const customer = pendingOpen;
+      setForm({
+        business_number: customer.business_number || '',
+        company_name: customer.company_name || '',
+        representative: customer.representative || '',
+        address: customer.address || '',
+        address_detail: customer.address_detail || '',
+        business_type: customer.business_type || '',
+        business_category: customer.business_category || '',
+        phone: customer.phone || '',
+        email: customer.email || '',
+        memo: customer.memo || '',
+      });
+      setFormErrors({});
+      setEditingCustomer(customer);
+    }
+    setPendingOpen(null);
     setShowModal(true);
   }
 
@@ -189,7 +203,6 @@ export default function CustomersPage() {
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || '수정 중 오류가 발생했습니다.');
-        addToast('거래처가 수정되었습니다.');
       } else {
         const res = await fetch('/api/customers', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -197,14 +210,20 @@ export default function CustomersPage() {
         });
         const data = await res.json();
         if (!res.ok) {
-          // 서버 에러를 한글로 변환
           const errorMsg = translateServerError(data.error);
           throw new Error(errorMsg);
         }
-        addToast('거래처가 등록되었습니다.');
       }
-      setShowModal(false);
       loadCustomers();
+      addToast(editingCustomer ? '거래처가 수정되었습니다.' : '거래처가 등록되었습니다.');
+      const done = confirm('저장되었습니다. 창을 닫으시겠습니까?');
+      if (done) {
+        setShowModal(false);
+      } else {
+        setForm(emptyForm);
+        setFormErrors({});
+        setEditingCustomer(null);
+      }
     } catch (err) {
       addToast(err.message, 'error');
     }
@@ -473,6 +492,13 @@ export default function CustomersPage() {
               </form>
             </div>
           </div>
+        )}
+
+        {showPasswordModal && (
+          <PasswordConfirmModal
+            onSuccess={onPasswordSuccess}
+            onClose={() => { setShowPasswordModal(false); setPendingOpen(null); }}
+          />
         )}
       </div>
     </>

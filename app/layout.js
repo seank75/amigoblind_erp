@@ -1,5 +1,5 @@
 import './globals.css';
-import Sidebar from '@/components/Sidebar';
+import ClientLayout from '@/components/ClientLayout';
 import { ToastProvider } from '@/components/Toast';
 
 export const metadata = {
@@ -12,12 +12,7 @@ export default function RootLayout({ children }) {
     <html lang="ko">
       <body suppressHydrationWarning>
         <ToastProvider>
-          <div className="app-layout">
-            <Sidebar />
-            <main className="main-content">
-              {children}
-            </main>
-          </div>
+          <ClientLayout>{children}</ClientLayout>
         </ToastProvider>
       </body>
     </html>

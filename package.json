@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.88.0",
+    "bcryptjs": "^3.0.3",
     "dotenv": "^17.4.2",
+    "jose": "^6.2.2",
     "jsbarcode": "^3.12.3",
     "next": "16.2.3",
     "postgres": "^3.4.9",

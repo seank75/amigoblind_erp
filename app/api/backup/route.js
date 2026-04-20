@@ -14,7 +14,8 @@ const n = (v) => (v === undefined ? null : v);
 
 export async function GET(request) {
   const user = await getAuthUser(request);
-  if (!user) return Response.json({ error: '인증이 필요합니다.' }, { status: 401 });
+  if (!user || user.role !== 'admin')
+    return Response.json({ error: '관리자만 데이터를 내보낼 수 있습니다.' }, { status: 403 });
 
   const sql = getSql();
   if (!sql) return Response.json({ error: 'DB 연결 없음' }, { status: 500 });

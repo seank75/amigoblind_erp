@@ -18,7 +18,7 @@ export async function GET(request) {
     return Response.json({ error: '관리자만 데이터를 내보낼 수 있습니다.' }, { status: 403 });
 
   const sql = getSql();
-  if (!sql) return Response.json({ error: 'DB 연결 없음' }, { status: 500 });
+  if (!sql) return Response.json({ error: '데이터베이스 연결이 없습니다.' }, { status: 500 });
 
   const [customers, products, orders, orderItems] = await Promise.all([
     sql`SELECT * FROM customers ORDER BY id`,
@@ -58,7 +58,7 @@ export async function POST(request) {
     return Response.json({ error: '관리자만 가져오기를 실행할 수 있습니다.' }, { status: 403 });
 
   const sql = getSql();
-  if (!sql) return Response.json({ error: 'DB 연결 없음' }, { status: 500 });
+  if (!sql) return Response.json({ error: '데이터베이스 연결이 없습니다.' }, { status: 500 });
 
   const { meta, data, mode } = await request.json();
   const { customers = [], products = [], orders = [], orderItems = [] } = data || {};
@@ -129,30 +129,65 @@ export async function POST(request) {
 
       const customerIdMap = {};
       for (const c of customers) {
-        const existing = c.business_number
-          ? await sql`SELECT id, updated_at FROM customers WHERE business_number = ${c.business_number}`
-          : [];
-        if (existing.length > 0) {
-          customerIdMap[c.id] = existing[0].id;
-          if (isNewer(c.updated_at, existing[0].updated_at)) {
-            await sql`
-              UPDATE customers SET
-                company_name = ${n(c.company_name)}, representative = ${n(c.representative)},
-                address = ${n(c.address)}, business_type = ${n(c.business_type)},
-                business_category = ${n(c.business_category)}, phone = ${n(c.phone)},
-                email = ${n(c.email)}, memo = ${n(c.memo)}, updated_at = ${n(c.updated_at)}
-              WHERE id = ${existing[0].id}
-            `;
-          }
-        } else {
-          const [{ id }] = await sql`
+        // 빈 문자열도 null로 정규화 (빈 문자열은 유니크 제약 충돌 유발)
+        const bizNum = c.business_number?.trim() || null;
+
+        if (bizNum) {
+          // 사업자번호 있음 → ON CONFLICT upsert (최신 우선)
+          const rows = await sql`
             INSERT INTO customers (business_number, company_name, representative, address,
-              business_type, business_category, phone, email, memo)
-            VALUES (${n(c.business_number)}, ${n(c.company_name)}, ${n(c.representative)}, ${n(c.address)},
-              ${n(c.business_type)}, ${n(c.business_category)}, ${n(c.phone)}, ${n(c.email)}, ${n(c.memo)})
+              business_type, business_category, phone, email, memo, updated_at)
+            VALUES (${bizNum}, ${n(c.company_name)}, ${n(c.representative)}, ${n(c.address)},
+              ${n(c.business_type)}, ${n(c.business_category)}, ${n(c.phone)}, ${n(c.email)}, ${n(c.memo)},
+              ${n(c.updated_at)})
+            ON CONFLICT (business_number) DO UPDATE SET
+              company_name = EXCLUDED.company_name,
+              representative = EXCLUDED.representative,
+              address = EXCLUDED.address,
+              business_type = EXCLUDED.business_type,
+              business_category = EXCLUDED.business_category,
+              phone = EXCLUDED.phone,
+              email = EXCLUDED.email,
+              memo = EXCLUDED.memo,
+              updated_at = EXCLUDED.updated_at
+            WHERE customers.updated_at IS NULL OR EXCLUDED.updated_at IS NULL
+               OR EXCLUDED.updated_at >= customers.updated_at
             RETURNING id
           `;
-          customerIdMap[c.id] = id;
+          if (rows.length > 0) {
+            customerIdMap[c.id] = rows[0].id;
+          } else {
+            // 기존 데이터가 더 최신 → id만 조회
+            const [existing] = await sql`SELECT id FROM customers WHERE business_number = ${bizNum}`;
+            customerIdMap[c.id] = existing.id;
+          }
+        } else {
+          // 사업자번호 없음 → 상호명으로 매칭 시도
+          const existing = n(c.company_name)
+            ? await sql`SELECT id, updated_at FROM customers WHERE company_name = ${c.company_name} AND business_number IS NULL`
+            : [];
+          if (existing.length > 0) {
+            customerIdMap[c.id] = existing[0].id;
+            if (isNewer(c.updated_at, existing[0].updated_at)) {
+              await sql`
+                UPDATE customers SET
+                  representative = ${n(c.representative)}, address = ${n(c.address)},
+                  business_type = ${n(c.business_type)}, business_category = ${n(c.business_category)},
+                  phone = ${n(c.phone)}, email = ${n(c.email)}, memo = ${n(c.memo)},
+                  updated_at = ${n(c.updated_at)}
+                WHERE id = ${existing[0].id}
+              `;
+            }
+          } else {
+            const [{ id }] = await sql`
+              INSERT INTO customers (business_number, company_name, representative, address,
+                business_type, business_category, phone, email, memo)
+              VALUES (null, ${n(c.company_name)}, ${n(c.representative)}, ${n(c.address)},
+                ${n(c.business_type)}, ${n(c.business_category)}, ${n(c.phone)}, ${n(c.email)}, ${n(c.memo)})
+              RETURNING id
+            `;
+            customerIdMap[c.id] = id;
+          }
         }
       }
 
@@ -238,6 +273,9 @@ export async function POST(request) {
     return Response.json({ ok: true, mode });
   } catch (err) {
     console.error('Import error:', err);
-    return Response.json({ error: err.message }, { status: 500 });
+    const msg = err.code === '23505'
+      ? '중복 데이터가 있어 가져오기에 실패했습니다. 전체 교체 모드를 사용해보세요.'
+      : '데이터 가져오기 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+    return Response.json({ error: msg }, { status: 500 });
   }
 }

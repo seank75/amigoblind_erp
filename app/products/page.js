@@ -15,6 +15,7 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [pendingOpen, setPendingOpen] = useState(null);
+  const [pendingDelete, setPendingDelete] = useState(null);
   const addToast = useToast();
 
   const emptyForm = { name: '', category: '롤블라인드', unit_price: 0, description: '' };
@@ -41,6 +42,12 @@ export default function ProductsPage() {
   }
 
   function onPasswordSuccess() {
+    if (pendingDelete) {
+      const product = pendingDelete;
+      setPendingDelete(null);
+      executeDelete(product);
+      return;
+    }
     if (pendingOpen === 'new') {
       setForm(emptyForm);
       setEditingProduct(null);
@@ -84,8 +91,12 @@ export default function ProductsPage() {
     } catch (err) { addToast(err.message, 'error'); }
   }
 
-  async function handleDelete(product) {
-    if (!confirm(`'${product.name}' 품목을 삭제하시겠습니까?`)) return;
+  function handleDelete(product) {
+    setPendingDelete(product);
+    setShowPasswordModal(true);
+  }
+
+  async function executeDelete(product) {
     try {
       await fetch('/api/products', {
         method: 'DELETE', headers: { 'Content-Type': 'application/json' },
@@ -203,7 +214,10 @@ export default function ProductsPage() {
         {showPasswordModal && (
           <PasswordConfirmModal
             onSuccess={onPasswordSuccess}
-            onClose={() => { setShowPasswordModal(false); setPendingOpen(null); }}
+            onClose={() => { setShowPasswordModal(false); setPendingOpen(null); setPendingDelete(null); }}
+            message={pendingDelete ? '삭제하려면 비밀번호를 입력해주세요.' : '수정하려면 비밀번호를 입력해주세요.'}
+            warning={pendingDelete ? `'${pendingDelete.name}' 품목을 삭제합니다. 이 작업은 되돌릴 수 없습니다.` : null}
+            danger={!!pendingDelete}
           />
         )}
       </div>

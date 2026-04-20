@@ -63,6 +63,7 @@ export default function CustomersPage() {
   const [kakaoLoaded, setKakaoLoaded] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [pendingOpen, setPendingOpen] = useState(null); // 'new' | customer object
+  const [pendingDelete, setPendingDelete] = useState(null); // customer to delete
   const addToast = useToast();
 
   const emptyForm = {
@@ -110,6 +111,12 @@ export default function CustomersPage() {
   }
 
   function onPasswordSuccess() {
+    if (pendingDelete) {
+      const customer = pendingDelete;
+      setPendingDelete(null);
+      executeDelete(customer);
+      return;
+    }
     if (pendingOpen === 'new') {
       setForm(emptyForm);
       setFormErrors({});
@@ -241,8 +248,12 @@ export default function CustomersPage() {
     return '오류가 발생했습니다. 다시 시도해주세요.';
   }
 
-  async function handleDelete(customer) {
-    if (!confirm(`'${customer.company_name}' 거래처를 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.`)) return;
+  function handleDelete(customer) {
+    setPendingDelete(customer);
+    setShowPasswordModal(true);
+  }
+
+  async function executeDelete(customer) {
     try {
       const res = await fetch('/api/customers', {
         method: 'DELETE', headers: { 'Content-Type': 'application/json' },
@@ -497,7 +508,10 @@ export default function CustomersPage() {
         {showPasswordModal && (
           <PasswordConfirmModal
             onSuccess={onPasswordSuccess}
-            onClose={() => { setShowPasswordModal(false); setPendingOpen(null); }}
+            onClose={() => { setShowPasswordModal(false); setPendingOpen(null); setPendingDelete(null); }}
+            message={pendingDelete ? '삭제하려면 비밀번호를 입력해주세요.' : '수정하려면 비밀번호를 입력해주세요.'}
+            warning={pendingDelete ? `'${pendingDelete.company_name}' 거래처를 삭제합니다. 이 작업은 되돌릴 수 없습니다.` : null}
+            danger={!!pendingDelete}
           />
         )}
       </div>

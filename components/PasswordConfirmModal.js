@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 
-export default function PasswordConfirmModal({ onSuccess, onClose }) {
+export default function PasswordConfirmModal({ onSuccess, onClose, message, warning, danger }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -44,8 +44,13 @@ export default function PasswordConfirmModal({ onSuccess, onClose }) {
         </div>
         <form onSubmit={handleSubmit}>
           <div className="modal-body">
+            {warning && (
+              <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '10px 14px', marginBottom: 14, fontSize: 13, color: '#dc2626', fontWeight: 500 }}>
+                ⚠️ {warning}
+              </div>
+            )}
             <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 16 }}>
-              수정하려면 비밀번호를 입력해주세요.
+              {message || '수정하려면 비밀번호를 입력해주세요.'}
             </p>
             <div className="form-group">
               <label className="form-label">비밀번호</label>
@@ -63,7 +68,7 @@ export default function PasswordConfirmModal({ onSuccess, onClose }) {
           </div>
           <div className="modal-footer">
             <button type="button" className="btn btn-secondary" onClick={onClose}>취소</button>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
+            <button type="submit" className={`btn ${danger ? 'btn-danger' : 'btn-primary'}`} disabled={loading}>
               {loading ? '확인 중...' : '확인'}
             </button>
           </div>

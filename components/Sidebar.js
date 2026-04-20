@@ -54,6 +54,10 @@ export default function Sidebar() {
         {isOpen ? '✕' : '☰'}
       </button>
 
+      <div className="mobile-header-symbol">
+        <img src="/amigo_symbol.png" alt="AMIGO Symbol" />
+      </div>
+
       {isOpen && (
         <div className="sidebar-overlay" onClick={() => setIsOpen(false)} />
       )}

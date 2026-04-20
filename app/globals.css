@@ -874,6 +874,24 @@ html, body {
 }
 
 /* Mobile Menu Overrides & Classes */
+.mobile-header-symbol {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: 36px;
+  height: 36px;
+  pointer-events: none;
+}
+
+.mobile-header-symbol img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .mobile-menu-btn {
   display: none;
   position: fixed;
@@ -912,6 +930,10 @@ html, body {
 }
 
 @media (max-width: 768px) {
+  .mobile-header-symbol {
+    display: block;
+  }
+
   .mobile-menu-btn {
     display: flex;
   }

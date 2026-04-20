@@ -396,6 +396,18 @@ html, body {
   font-size: 12px;
 }
 
+.btn-add {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.btn-add-icon {
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1;
+  margin-right: 2px;
+}
+
 .btn-icon {
   width: 34px;
   height: 34px;

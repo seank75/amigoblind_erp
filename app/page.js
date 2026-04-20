@@ -45,8 +45,8 @@ export default function Dashboard() {
     <>
       <header className="main-header">
         <h1>대시보드</h1>
-        <Link href="/orders/new" className="btn btn-primary">
-          ➕ 새 주문
+        <Link href="/orders/new" className="btn btn-primary btn-add">
+          <span className="btn-add-icon">+</span> 새 주문
         </Link>
       </header>
       <div className="main-body">
@@ -123,8 +123,8 @@ export default function Dashboard() {
                 <div className="empty-state-icon">📋</div>
                 <div className="empty-state-title">아직 주문이 없습니다</div>
                 <div className="empty-state-desc">새 주문을 등록해보세요</div>
-                <Link href="/orders/new" className="btn btn-primary">
-                  ➕ 주문 등록
+                <Link href="/orders/new" className="btn btn-primary btn-add">
+                  <span className="btn-add-icon">+</span> 주문 등록
                 </Link>
               </div>
             )}

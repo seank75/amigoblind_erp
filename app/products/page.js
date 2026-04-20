@@ -114,7 +114,7 @@ export default function ProductsPage() {
               value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
           <div className="toolbar-right">
-            <button className="btn btn-primary" onClick={openNew}>➕ 품목 등록</button>
+            <button className="btn btn-primary btn-add" onClick={openNew}><span className="btn-add-icon">+</span> 품목 등록</button>
           </div>
         </div>
 

@@ -280,8 +280,8 @@ export default function CustomersPage() {
             />
           </div>
           <div className="toolbar-right">
-            <button className="btn btn-primary" onClick={openNew}>
-              ➕ 거래처 등록
+            <button className="btn btn-primary btn-add" onClick={openNew}>
+              <span className="btn-add-icon">+</span> 거래처 등록
             </button>
           </div>
         </div>

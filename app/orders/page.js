@@ -68,7 +68,7 @@ export default function OrdersPage() {
     <>
       <header className="main-header">
         <h1>주문 관리</h1>
-        <Link href="/orders/new" className="btn btn-primary">➕ 새 주문</Link>
+        <Link href="/orders/new" className="btn btn-primary btn-add"><span className="btn-add-icon">+</span> 새 주문</Link>
       </header>
       <div className="main-body">
         <div className="toolbar">
@@ -138,7 +138,7 @@ export default function OrdersPage() {
                 <div className="empty-state-icon">📋</div>
                 <div className="empty-state-title">주문이 없습니다</div>
                 <div className="empty-state-desc">새 주문을 등록해보세요</div>
-                <Link href="/orders/new" className="btn btn-primary">➕ 주문 등록</Link>
+                <Link href="/orders/new" className="btn btn-primary btn-add"><span className="btn-add-icon">+</span> 주문 등록</Link>
               </div>
             )}
           </div>

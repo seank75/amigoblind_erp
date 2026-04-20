@@ -79,7 +79,7 @@ export default function UsersPage() {
           <div className="toolbar">
             <div className="toolbar-left" />
             <div className="toolbar-right">
-              <button className="btn btn-primary" onClick={() => { setForm({ username: '', name: '', password: '', passwordConfirm: '', role: 'user' }); setFormError(''); setShowModal(true); }}>➕ 사용자 등록</button>
+              <button className="btn btn-primary btn-add" onClick={() => { setForm({ username: '', name: '', password: '', passwordConfirm: '', role: 'user' }); setFormError(''); setShowModal(true); }}><span className="btn-add-icon">+</span> 사용자 등록</button>
             </div>
           </div>
         )}

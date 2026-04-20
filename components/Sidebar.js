@@ -103,27 +103,30 @@ export default function Sidebar() {
           </div>
         )}
         <nav className="sidebar-nav">
-          {navItems.map((section, idx) => (
-            <div key={section.section} style={idx > 0 ? { borderTop: '1px solid #e5e7eb', paddingTop: '8px', marginTop: '8px' } : {}}>
-              <div className="nav-section-title">{section.section}</div>
-              {section.items.map((item) => {
-                const isActive =
-                  item.href === '/'
-                    ? pathname === '/'
-                    : pathname.startsWith(item.href);
-                return (
+          {(() => {
+            const allItems = navItems.flatMap((s) => s.items);
+            const matches = (href) =>
+              href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(href + '/');
+            const activeHref = allItems
+              .filter((i) => matches(i.href))
+              .sort((a, b) => b.href.length - a.href.length)[0]?.href;
+
+            return navItems.map((section, idx) => (
+              <div key={section.section} style={idx > 0 ? { borderTop: '1px solid #e5e7eb', paddingTop: '8px', marginTop: '8px' } : {}}>
+                <div className="nav-section-title">{section.section}</div>
+                {section.items.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`nav-link ${isActive ? 'active' : ''}`}
+                    className={`nav-link ${item.href === activeHref ? 'active' : ''}`}
                   >
                     <span className="nav-link-icon">{item.icon}</span>
                     {item.label}
                   </Link>
-                );
-              })}
-            </div>
-          ))}
+                ))}
+              </div>
+            ));
+          })()}
         </nav>
       </aside>
     </>

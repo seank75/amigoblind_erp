@@ -158,7 +158,7 @@ export default function NewOrderPage() {
               <button type="button" className="btn btn-secondary btn-sm btn-add" onClick={addItem}><span className="btn-add-icon">+</span> 항목 추가</button>
             </div>
             <div className="card-body" style={{ overflowX: 'auto' }}>
-              <table className="data-table" style={{ minWidth: 900 }}>
+              <table className="data-table" style={{ minWidth: 700 }}>
                 <thead>
                   <tr>
                     <th style={{ width: 180 }}>품목</th>

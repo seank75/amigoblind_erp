@@ -299,6 +299,8 @@ html, body {
 /* ===== Table ===== */
 .data-table-wrapper {
   overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
 }
 
 .data-table {
@@ -862,6 +864,8 @@ html, body {
 
   .main-content {
     margin-left: 0;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
 
   .main-body {
